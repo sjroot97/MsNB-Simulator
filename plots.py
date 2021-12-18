@@ -6,8 +6,8 @@ import os
 import TempProfile, functions, loop
 
 def x_vs_Tx(path,t,T_x):
-    ymin=598.5
-    ymax=601.5
+    ymin=696
+    ymax=704
 
     plt.figure()
     plt.ylim(ymin, ymax)
@@ -65,6 +65,7 @@ def t_vs_angle(t,theta):
     plt.xlabel('time, t (min)')
     plt.ylabel("Control Drum Orientation (°)")
     plt.savefig("img/t_vs_angle.png")
+    plt.show()
 
 def gif(frame_folder):
     frames = [Image.open(image) for image in sorted(glob.glob(f"{frame_folder}/*.PNG"), key=os.path.getmtime)]

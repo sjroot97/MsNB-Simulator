@@ -9,7 +9,7 @@ Q2  = Q0
 t2=t-t01-t1-t12
 
 #Proportional Control Loop
-#Control = 'On'
-Control = 'Off'
+Control = 'On'
+#Control = 'Off'
 bias = 120.14
 gain = {'On':1e-4, 'Off':0}

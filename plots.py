@@ -25,7 +25,6 @@ def x_vs_Tx(path,t,T_x,Tmin,Tmax):
 
 def t_vs_Q(t,Qhex,Qcore):
     plt.figure()
-    plt.ylim(0,11000)
     plt.plot(t/60,Qhex,label='Heat Exchanger')
     if Qcore != None:
         plt.plot(t/60,Qcore, label='Core')

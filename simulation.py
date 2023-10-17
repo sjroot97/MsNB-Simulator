@@ -23,7 +23,7 @@ T_x = TempProfile.initial(T_hot, T_cold)
 plots.x_vs_Tx("img/animateTx_t/t-0.png",0.0,T_x,T_cold,T_hot)
 
 #Initialize HEX transient
-Q1,Q2 = 8000,Q0
+Q1,Q2 = Q0,Q0
 tlen = 3600
 t01,t1,t12 = 600,600,600
 t2=tlen-t01-t1-t12

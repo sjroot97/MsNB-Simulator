@@ -1,6 +1,5 @@
 import inputs
 import numpy as np
-import matplotlib.pyplot as plt
 
 def drum(Qhex,Qcore):
     error = Qhex-Qcore

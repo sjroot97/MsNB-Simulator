@@ -35,8 +35,6 @@ def RoC(x1,x2): #time rate of change
 #___________________________________________________________________________
 #___________________________________________________________________________
 
-
-
 #Physical Properties
 def cp(T):                          #input Celcius
     T=absT(T)                       #Convert T to Kelvin
@@ -62,8 +60,10 @@ def Velo(T_x):                                 #input Celcius
     DrivingForce=DiffP(T_x)                    #Convert Differential Pressure
     rho=density(list_ave(T_x))                #Calculate Average Density of entire Loop
     v_squared = (2*DrivingForce)/(params.xi*rho)
-    #return np.sqrt(v_squared)   #output m/s
-    return 0.05 #m/s
+    if v_squared<0.09**2:    v_squared=0.09**2
+    if v_squared>0.11**2:    v_squared=0.11**2
+    v = np.sqrt(v_squared)   #output m/s
+    return v# 0.05 #m/s
 #___________________________________________________________________________
 
 def MassFlow(T_x, regime):     #input Celcius
@@ -99,9 +99,10 @@ def TempRxtyChange(previous,current):      #input Celcius
     return params.alphaT*dT #unitless
 #___________________________________________________________________________
 
-def FlowRxty(T_x):                                    #input Celcius
-    v=base_to_centi(Velo(T_x))                               #calculate fluid velocity
+def FlowRxty(T_x,v):                                    #input Celcius
+    v=base_to_centi(v)                               #calculate fluid velocity
     L = loop.Ri2-loop.Ro                                       #calculate out of core path length
     H = loop.Ro-loop.Ri1                                       #calculate in core path length
-    return -(L/(L+H))*params.beta_eff*(1-np.exp(-params.alphaF*v)) #unitless
+    rho = -(L/(L+H))*params.beta_eff*(1-np.exp(-params.alphaF*v)) #unitless
+    return rho
 #___________________________________________________________________________

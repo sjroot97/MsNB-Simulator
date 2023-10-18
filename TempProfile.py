@@ -23,30 +23,31 @@ def smooth(arr,howmany):
     L[howmany//2:] += len(arr)%chunklength
     chunks = np.split(arr,L)
     
+    list = []
     for chunk in chunks:
-        chunk = np.linspace(chunk[0],chunk[-1],num=len(chunk))
+        list.append(np.linspace(chunk[0],chunk[-1],num=len(chunk)))
     
-    smoothed_arr = np.concatenate(chunks)
+    smoothed_arr = np.concatenate(list)
     return smoothed_arr
 
 def core(T_x):
     T_xcore = np.split(T_x,[loop.xcore[-1]+1])[0]
-    T_xcore = smooth(T_xcore,3)
+    T_xcore = smooth(T_xcore,10)
     return T_xcore
 
 def chimney(T_x):
     T_xchimney = np.split(T_x,[loop.xchimney[0],loop.xchimney[-1]+1])[1]
-    T_xchimney = smooth(T_xchimney,3)
+    T_xchimney = smooth(T_xchimney,5)
     return T_xchimney
 
 def hex(T_x):
     T_xhex = np.split(T_x,[loop.xhex[0],loop.xhex[-1]+1])[1]
-    T_xhex = smooth(T_xhex,3)
+    T_xhex = smooth(T_xhex,5)
     return T_xhex
 
 def downcomer(T_x):
     T_xdowncomer = np.split(T_x,[loop.xdowncomer[0]])[1]
-    T_xdowncomer = smooth(T_xdowncomer,3)
+    T_xdowncomer = smooth(T_xdowncomer,10)
     return T_xdowncomer
     
     

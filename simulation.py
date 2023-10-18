@@ -23,7 +23,7 @@ T_x = TempProfile.initial(T_hot, T_cold)
 plots.x_vs_Tx("img/animateTx_t/t-0.png",0.0,T_x,T_cold,T_hot)
 
 #Initialize HEX transient
-Q1,Q2 = Q0,Q0
+Q1,Q2 = Q0,8000
 tlen = 3600
 t01,t1,t12 = 600,600,600
 t2=tlen-t01-t1-t12
@@ -71,7 +71,7 @@ for step in tqdm(t[1:]):
     reac_t.append(Freac_t[-1]+Treac_t[-1]+Creac_t[-1])
     reac_dot_t.append(functions.RoC(reac_t[-2], reac_t[-1]))
 
-    if True or reac_t[-1]==0:
+    if reac_t[-1]==0:
     #if 1==1:
         exponent.append(0)
     else:

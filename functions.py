@@ -60,8 +60,8 @@ def Velo(T_x):                                 #input Celcius
     DrivingForce=DiffP(T_x)                    #Convert Differential Pressure
     rho=density(list_ave(T_x))                #Calculate Average Density of entire Loop
     v_squared = (2*DrivingForce)/(params.xi*rho)
-    if v_squared<0.09**2:    v_squared=0.09**2
-    if v_squared>0.11**2:    v_squared=0.11**2
+    if v_squared<0.05**2:    v_squared=0.05**2
+    if v_squared>0.15**2:    v_squared=0.10**2
     v = np.sqrt(v_squared)   #output m/s
     return v# 0.05 #m/s
 #___________________________________________________________________________
@@ -99,8 +99,8 @@ def TempRxtyChange(previous,current):      #input Celcius
     return params.alphaT*dT #unitless
 #___________________________________________________________________________
 
-def FlowRxty(T_x,v):                                    #input Celcius
-    v=base_to_centi(v)                               #calculate fluid velocity
+def FlowRxty(T_x):                                    #input Celcius
+    v=base_to_centi(Velo(T_x))                               #calculate fluid velocity
     L = loop.Ri2-loop.Ro                                       #calculate out of core path length
     H = loop.Ro-loop.Ri1                                       #calculate in core path length
     rho = -(L/(L+H))*params.beta_eff*(1-np.exp(-params.alphaF*v)) #unitless

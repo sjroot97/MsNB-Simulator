@@ -2,7 +2,7 @@ import os; os.system('cls')
 print('import libraries')
 import inputs, initial, params, loop, plots, functions, TempProfile, control
 import numpy as np
-from scipy.signal import argrelextrema
+#from scipy.signal import argrelextrema
 from tqdm import tqdm as tqdm
 
 print('refresh simulation environment')
@@ -43,7 +43,7 @@ Qcore_t= [Q0]
 v_t = [v]
 T_x_t = [T_x]
 
-Freac_t = [functions.FlowRxty(T_x,v)]
+Freac_t = [functions.FlowRxty(T_x)]
 Treac_t = [-Freac_t[0]]
 
 CDtheta_t = [control.drum(Qhex_t[0],Qcore_t[0])]
@@ -56,11 +56,13 @@ exponent=[0]
 print('run simulation')
 for step in tqdm(t[1:]):
     T_x = TempProfile.advance(T_x, v ,Qcore_t[-1], Qhex_t[step-1])
-    v_t.append(v)
-    #v_t.append(functions.Velo(T_x))
+    #v_t.append(v)
+    vnew = functions.Velo(T_x)
+    #print(vnew)
+    v_t.append(vnew)
     T_x_t.append(T_x)
 
-    Freac_t.append(functions.FlowRxty(T_x,v))
+    Freac_t.append(functions.FlowRxty(T_x))
     Treac_t.append(Treac_t[-1] + functions.TempRxtyChange(T_x_t[-2],T_x_t[-1]))
 
     CDtheta_t.append(control.drum(Qhex_t[step],Qcore_t[-1]))
@@ -69,7 +71,7 @@ for step in tqdm(t[1:]):
     reac_t.append(Freac_t[-1]+Treac_t[-1]+Creac_t[-1])
     reac_dot_t.append(functions.RoC(reac_t[-2], reac_t[-1]))
 
-    if reac_t[-1]==0:
+    if True or reac_t[-1]==0:
     #if 1==1:
         exponent.append(0)
     else:

@@ -30,7 +30,7 @@ def Power(Th,Tc):                 #Input Celcius
     m,v = MassFlow(Th,Tc)           #calculate Mass Flow Rate
     cp_bar = functions.cp((Th+Tc)/2)                   #Calculate average heat capacity of regime
     dT = Th-Tc                          #Calculate temperature difference across regime
-    power = functions.base_to_kilo(m*cp_bar*dT)
+    power = m*cp_bar*dT
     return power,v   #Output kW
 
 def algorithm(Q): #performs a binary seach

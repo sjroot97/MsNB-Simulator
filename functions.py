@@ -1,6 +1,7 @@
 #import whatever we need
 import params, loop, TempProfile
 import numpy as np
+from pynverse import inversefunc
 #___________________________________________________________________________
 #___________________________________________________________________________
 #___________________________________________________________________________
@@ -38,12 +39,21 @@ def RoC(x1,x2): #time rate of change
 #Physical Properties
 def cp(T):                          #input Celcius
     T=absT(T)                       #Convert T to Kelvin
-    return 1.0634*T+976.78          # output J/kg-K
+    return (1.0634*T+976.78)/1000          # output kJ/kg-K
 #___________________________________________________________________________
 
 def density(T):                              #input Celcius
     T=absT(T)                                #Convert T to Kelvin
-    return 1000*(4.6820365-T*9.4601046e-4)   #output kg/m3
+    return 1000*(4.6820365-T*9.4601046e-4)   #output kg/m3\
+        
+def T2mu(T):
+    Tref = 600
+    m_x = density(T)*(params.Ax*.001) #kg
+    u_x = cp((T+Tref)/2)*(T-Tref)
+    E_x = m_x*u_x
+    return E_x
+
+mu2T = inversefunc(T2mu)
 #___________________________________________________________________________
 #___________________________________________________________________________
 
@@ -79,15 +89,6 @@ def MassFlow(T_x, regime):     #input Celcius
 
 #___________________________________________________________________________
 
-def dT(T_x, Q, regime):            #input T in Celcius and Q in kW
-    m = MassFlow(T_x, regime)      #calculate mass flow rate
-    if regime == "core":
-        Tave = list_ave(TempProfile.core(T_x))    #calculate average temperature in regime
-    elif regime == "hex":
-        Tave = list_ave(TempProfile.hex(T_x))    #calculate average temperature in regime
-    cp_ave = cp(Tave)                   #calculate average heat capcity of regime
-    Q=kilo_to_base(Q)               #convert Q from kW to W
-    return  round(Q/(m*cp_ave),3)                #output change of Celcius/Kelvin
 #___________________________________________________________________________
 #___________________________________________________________________________
 

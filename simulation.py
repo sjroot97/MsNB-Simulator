@@ -55,10 +55,8 @@ exponent=[0]
 
 print('run simulation')
 for step in tqdm(t[1:]):
-    T_x = TempProfile.advance(T_x, v ,Qcore_t[-1], Qhex_t[step-1])
-    #v_t.append(v)
+    T_x = TempProfile.newadvance(T_x, v ,Qcore_t[-1], Qhex_t[step-1])
     vnew = functions.Velo(T_x)
-    #print(vnew)
     v_t.append(vnew)
     T_x_t.append(T_x)
 

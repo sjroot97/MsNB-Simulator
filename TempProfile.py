@@ -9,13 +9,6 @@ def initial(T_hot,T_cold):
     T_x =  np.concatenate((T_xcore,T_xchimney,T_xhex,T_xdowncomer))
     return T_x
 
-def newinitial(Q, Tave):
-    #Step 1, Calculate Core and HEX linear heat rate, temp, cp, and mass flow
-    LHRcore=functions.kilo_to_base(Q/len(loop.xcore)) #W/mm
-    LHRhex=functions.kilo_to_base(Q/len(loop.xhex))    #W/mm
-
-    CP=functions.cp(Tave)   #J/kg-K
-    M=functions.MassFlow(T_x,'core') #kg/s
 #________________________________________________________________________
 def smooth(arr,howmany):
     chunklength = len(arr)//howmany
@@ -51,8 +44,8 @@ def downcomer(T_x):
 #___________________________________________________________________________
 def advance(T_x, velo, Qcore, Qhex):
     #Step 1, Calculate Core and HEX linear heat rate, temp, cp, and mass flow
-    LHRcore=functions.kilo_to_base(Qcore/len(loop.xcore)) #W/mm
-    LHRhex=functions.kilo_to_base(Qhex/len(loop.xhex))    #W/mm
+    LHRcore=Qcore/len(loop.xcore) #kW/mm
+    LHRhex=Qhex/len(loop.xhex)    #kW/mm
 
     Tcore=functions.list_ave(core(T_x))    #Celcius
     Thex=functions.list_ave(hex(T_x))      #Celcius
@@ -86,3 +79,33 @@ def advance(T_x, velo, Qcore, Qhex):
     T_xdowncomer = smooth(T_xdowncomer,10)
     T_x =  np.concatenate((T_xcore,T_xchimney,T_xhex,T_xdowncomer))
     return T_x
+
+def newadvance(T_x,velo,Qcore,Qhex):
+    velo=int(round(functions.base_to_milli(velo),0))
+    
+    LHRcore=Qcore/len(loop.xcore) #kW/mm
+    LHRhex=-Qhex/len(loop.xhex)    #kW/mm
+    Q_core = LHRcore*np.ones(len(loop.xcore))
+    Q_core[0:velo] = np.linspace(0,Q_core[velo],num=velo)
+    Q_chimney = np.zeros(len(loop.xchimney))
+    Q_hex = LHRhex*np.ones(len(loop.xhex))
+    Q_hex[0:velo] = np.linspace(0,Q_hex[velo],num=velo)
+    Q_downcomer = np.zeros(len(loop.xdowncomer))
+    Q = np.concatenate((Q_core,Q_chimney,Q_hex,Q_downcomer))
+    
+    E_x = functions.T2mu(T_x)
+
+    E_enter = E_x.copy()
+    E_xcore=core(E_enter)
+    E_xcore[-velo:] = E_xcore[-1]
+    E_xhex=hex(E_enter)
+    E_xhex[-velo:] = E_xhex[-1]
+    E_enter = np.roll(E_enter,velo)
+
+    E_exit = E_x.copy()
+    
+    dE_x = E_enter - E_exit + Q
+    E_x += dE_x
+
+    Tnew = functions.mu2T(E_x)
+    return Tnew

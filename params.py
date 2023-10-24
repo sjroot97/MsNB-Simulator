@@ -6,6 +6,6 @@ lam = 0.1 #sec
 h = 1.09 #m
 xi = 25.0 #
 alphaF = 3.3976917e-1 #s/cm
-Ax =0.4 #m2
+Ax = 0.4 #m2
 dt = 1 #sec
 dx = 1 #mm

@@ -1,7 +1,7 @@
 #import whatever we need
 import params, loop, TempProfile
 import numpy as np
-from pynverse import inversefunc
+#from pynverse import inversefunc
 #___________________________________________________________________________
 #___________________________________________________________________________
 #___________________________________________________________________________
@@ -53,7 +53,19 @@ def T2mu(T):
     E_x = m_x*u_x
     return E_x
 
-mu2T = inversefunc(T2mu)
+#T2mu_inverse = inversefunc(T2mu)
+
+TempArray = np.linspace(500,900,num=10000)
+EnergyArray = T2mu(TempArray)
+
+coeff = np.polyfit(EnergyArray,TempArray,3)
+
+def mu2T(E):
+    value = np.zeros(len(E))
+    for c in coeff:
+        value = value*E+c
+    return value
+
 #___________________________________________________________________________
 #___________________________________________________________________________
 

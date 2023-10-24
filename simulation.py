@@ -8,6 +8,7 @@ from tqdm import tqdm as tqdm
 print('refresh simulation environment')
 plots.kill()
 
+
 #Calculate Initial Conditions
 Q = 10000
 print('determine initial conditions')

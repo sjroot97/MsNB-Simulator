@@ -5,12 +5,9 @@ def initial(T_hot,T_cold):
     '''
     Converts hot temperature and cold temperature to mass in the control volume times internal energy of the control volume, uses those to define linear arrays in the heat transfer regimes, then converts those arrays back to temperature. Concatenates the regime arrays into a total temperature profile array.
     '''
-    Ehot,Ecold = functions.T2mu(T_hot),functions.T2mu(T_cold)
-    E_xcore = np.linspace(Ecold,Ehot,num=len(loop.xcore))
-    T_xcore = functions.mu2T(E_xcore)
+    T_xcore = np.linspace(T_cold,T_hot,num=len(loop.xcore))
     T_xchimney = T_hot*np.ones(len(loop.xchimney))
-    E_xhex = np.linspace(Ehot,Ecold,num=len(loop.xhex))
-    T_xhex = functions.mu2T(E_xhex)
+    T_xhex = np.linspace(T_hot,T_cold,num=len(loop.xhex))
     T_xdowncomer = T_cold*np.ones(len(loop.xdowncomer))
     T_x =  np.concatenate((T_xcore,T_xchimney,T_xhex,T_xdowncomer))
     return T_x
@@ -54,7 +51,7 @@ def advance(T_x,velo,Qcore,Qhex):
     Q_hex = LHRhex*np.ones(len(loop.xhex))
     Q_hex[0:velo] = np.linspace(0,Q_hex[velo],num=velo)
     Q_downcomer = np.zeros(len(loop.xdowncomer))
-    Q = np.concatenate((Q_core,Q_chimney,Q_hex,Q_downcomer))
+    Q_x = np.concatenate((Q_core,Q_chimney,Q_hex,Q_downcomer))
     
     E_x = functions.T2mu(T_x)
 
@@ -67,7 +64,7 @@ def advance(T_x,velo,Qcore,Qhex):
 
     E_exit = E_x.copy()
     
-    dE_x = E_enter - E_exit + Q
+    dE_x = E_enter - E_exit + Q_x
     E_x += dE_x
 
     Tnew = functions.mu2T(E_x)

@@ -8,7 +8,7 @@ print(functions.coeff)
 E = functions.EnergyArray
 T = functions.TempArray
 T_calc = functions.mu2T(E)
-print(T_calc-T)
+#print(T_calc-T)
 plt.figure()
 plt.plot(E,functions.TempArray)
 plt.plot(E,T_calc)

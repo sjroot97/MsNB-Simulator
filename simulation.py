@@ -29,7 +29,7 @@ print(f'Velocity: {round(v*100,1)} cm/s')
 '''
 Q0 is calculated above, Q1 is the power after the first power change, Q2 is the power after the second power change. tlen is the total time in seconds of the simulation (3600sec = 1hr). t01 is the time over which the first power change occurs (ramp function ~ use t01 = 0 for step response). t1 is the time in seconds for which the reactor is held at Q1. t12 is the time in seconds over which the second power change occurs. t2 is calculated and is the time between the end of the second power change and the end of the simulation
 '''
-Q1,Q2 = Q0,Q0
+Q1,Q2 = Q0,8000
 tlen = 3600
 t01,t1,t12 = 600,600,0
 t2=tlen-t01-t1-t12

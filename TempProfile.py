@@ -2,27 +2,23 @@ import loop, params, functions
 import numpy as np
 
 def initial(T_hot,T_cold):
-    T_xcore = np.linspace(T_cold,T_hot,num=len(loop.xcore))
+    '''
+    Converts hot temperature and cold temperature to mass in the control volume times internal energy of the control volume, uses those to define linear arrays in the heat transfer regimes, then converts those arrays back to temperature. Concatenates the regime arrays into a total temperature profile array.
+    '''
+    Ehot,Ecold = functions.T2mu(T_hot),functions.T2mu(T_cold)
+    E_xcore = np.linspace(Ecold,Ehot,num=len(loop.xcore))
+    T_xcore = functions.mu2T(E_xcore)
     T_xchimney = T_hot*np.ones(len(loop.xchimney))
-    T_xhex = np.linspace(T_hot,T_cold,num=len(loop.xhex))
+    E_xhex = np.linspace(Ehot,Ecold,num=len(loop.xhex))
+    T_xhex = functions.mu2T(E_xhex)
     T_xdowncomer = T_cold*np.ones(len(loop.xdowncomer))
     T_x =  np.concatenate((T_xcore,T_xchimney,T_xhex,T_xdowncomer))
     return T_x
 
-#________________________________________________________________________
-def smooth(arr,howmany):
-    chunklength = len(arr)//howmany
-    L = chunklength*np.arange(1,howmany)
-    L[howmany//2:] += len(arr)%chunklength
-    chunks = np.split(arr,L)
-    
-    list = []
-    for chunk in chunks:
-        list.append(np.linspace(chunk[0],chunk[-1],num=len(chunk)))
-    
-    smoothed_arr = np.concatenate(list)
-    return smoothed_arr
-
+#_______________________________________________________________________
+'''
+These four functions split the full temperature array into regime arrays
+'''
 def core(T_x):
     T_xcore = np.split(T_x,[loop.xcore[-1]+1])[0]
     return T_xcore
@@ -39,48 +35,15 @@ def downcomer(T_x):
     T_xdowncomer = np.split(T_x,[loop.xdowncomer[0]])[1]
     return T_xdowncomer
     
-    
 
-#___________________________________________________________________________
-def advance(T_x, velo, Qcore, Qhex):
-    #Step 1, Calculate Core and HEX linear heat rate, temp, cp, and mass flow
-    LHRcore=Qcore/len(loop.xcore) #kW/mm
-    LHRhex=Qhex/len(loop.xhex)    #kW/mm
+#_______________________________________________________________________
 
-    Tcore=functions.list_ave(core(T_x))    #Celcius
-    Thex=functions.list_ave(hex(T_x))      #Celcius
 
-    CPcore=functions.cp(Tcore)   #J/kg-K
-    CPhex=functions.cp(Thex)     #J/kg-K
-
-    Mcore=functions.MassFlow(T_x,'core') #kg/s
-    Mhex=functions.MassFlow(T_x,'hex')   #kg/s
-
-    #Step 2, Calculate Core and HEX linear temperature rise
-    dTcore=LHRcore/(Mcore*CPcore) #degC/mm
-    dThex=LHRhex/(Mhex*CPhex)   #degC/mm
-
-    #Step 3, calculate distance traveled during step - v*dt
-    velo=int(round(functions.base_to_milli(velo),0))
-    advance=np.arange(1,velo+1)
-
-    #Step 4, roll and heat/cool
-    for _ in advance:
-        T_x=np.roll(T_x,1)
-        T_xcore=core(T_x)+dTcore
-        T_xchimney=chimney(T_x)
-        T_xhex=hex(T_x)-dThex
-        T_xdowncomer=downcomer(T_x)
-        T_x =  np.concatenate((T_xcore,T_xchimney,T_xhex,T_xdowncomer))
-    
-    T_xcore = smooth(T_xcore,10)
-    T_xchimney = smooth(T_xchimney,5)
-    T_xhex = smooth(T_xhex,5)
-    T_xdowncomer = smooth(T_xdowncomer,10)
-    T_x =  np.concatenate((T_xcore,T_xchimney,T_xhex,T_xdowncomer))
-    return T_x
-
-def newadvance(T_x,velo,Qcore,Qhex):
+# Advance the temperature profile from one time step to the next.
+def advance(T_x,velo,Qcore,Qhex):
+    '''
+    This function is the heart of the simulator. It rounds and converts the velocity to an integer mm/s. It generates power arrays where the core and heat exchanger have linear heat rates, with edge effects being considered to account for the fact that not some of the distance traversed is done in the riser or downcomer. The temperature profile is then converted to energy. It follows a uniform state uniform flow assumption where the change in energy is equal to the fluid internal energy entering minus the fluid internal energy entering, plus the heat into the control volume. It neglects gravemetric, kinetic, and PV differentials, as in liquids the temperature/heat capacity effects dominate. The entering fluid is obtained by "rolling" back the energy array by the velocity (times the timestep length), again considering edge effects. The new energy array is computed and converted to temperature, then returned to simulation.py
+    '''
     velo=int(round(functions.base_to_milli(velo),0))
     
     LHRcore=Qcore/len(loop.xcore) #kW/mm

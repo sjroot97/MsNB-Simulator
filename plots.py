@@ -37,12 +37,12 @@ def t_vs_Q(t,Qhex,Qcore):
 
 def t_vs_reac(t,Flow,Temp,Total):
     plt.figure()
-    plt.plot(t/60,Flow,label='Flow Reactivity')
-    plt.plot(t/60,Temp, label='Temperature Reactivity')
+    #plt.plot(t/60,Flow,label='Flow Reactivity')
+    #plt.plot(t/60,Temp, label='Temperature Reactivity')
     plt.plot(t/60,Total, label='Reactivity')
     plt.xlabel('time, t (min)')
     plt.ylabel('Reactivity')
-    plt.legend(loc='best')
+    #plt.legend(loc='best')
     plt.savefig("img/t_vs_reac.png")
     plt.clf()
     plt.close()

@@ -40,11 +40,6 @@ def RoC(x1,x2): #time rate of change
 def cp(T):                          #input Celcius
     T=absT(T)                       #Convert T to Kelvin
     return (1.0634*T+976.78)/1000          # output kJ/kg-K
-
-def cp_int(Tstar,Tref):
-    Star = 1.0634/2000*Tstar**2+976.78/1000*Tstar
-    Ref = 1.0634/2000*Tref**2+976.78/1000*Tref
-    return Star-Ref
 #___________________________________________________________________________
 
 def density(T):                              #input Celcius
@@ -53,14 +48,14 @@ def density(T):                              #input Celcius
         
 def T2mu(T):
     Tref = 600
-    m_x = density(T)*(params.Ax*.001) #kg
-    u_x = cp_int(T,Tref)
+    m_x = density(T)*(params.Ax*.01) #kg
+    u_x = cp((T+Tref)/2)*(T-Tref)
     E_x = m_x*u_x
     return E_x
 
 #T2mu_inverse = inversefunc(T2mu)
 
-TempArray = np.linspace(500,900,num=10000)
+TempArray = np.linspace(600,800,num=1000)
 EnergyArray = T2mu(TempArray)
 
 coeff = np.polyfit(EnergyArray,TempArray,3)
@@ -76,10 +71,8 @@ def mu2T(E):
 
 #System Quantities
 def DiffP(T_x):                 #input Celcius
-
-    hot=density(list_ave(TempProfile.chimney(T_x)))
-    #hot=density(list_ave(np.concatenate((TempProfile.chimney(T_x),TempProfile.core(T_x)))))             #calculate average density of hot leg
-    cold=density(list_ave(TempProfile.downcomer(T_x)))            #calculate average density of cold leg
+    hot=density(list_ave(TempProfile.hotleg(T_x)))
+    cold=density(list_ave(TempProfile.coldleg(T_x)))            #calculate average density of cold leg
     return (cold-hot)*params.h*9.81     #output Pa
 #___________________________________________________________________________
 
@@ -87,22 +80,12 @@ def Velo(T_x):                                 #input Celcius
     DrivingForce=DiffP(T_x)                    #Convert Differential Pressure
     rho=density(list_ave(T_x))                #Calculate Average Density of entire Loop
     v_squared = (2*DrivingForce)/(params.xi*rho)
-    if v_squared<0.05**2:    v_squared=0.05**2
-    if v_squared>0.15**2:    v_squared=0.10**2
+    if v_squared<0.01**2:    v_squared=0.01**2
+    if v_squared>0.15**2:    v_squared=0.15**2
     v = np.sqrt(v_squared)   #output m/s
     return v# 0.05 #m/s
 #___________________________________________________________________________
 
-def MassFlow(T_x, regime):     #input Celcius
-    v = Velo(T_x)            #calculate fluid velocity
-    if regime == "core":
-        list = TempProfile.core(T_x)
-        Tave = list_ave(list)    #calculate average temperature in regime
-    elif regime == "hex":
-        list = TempProfile.hex(T_x)
-        Tave = list_ave(list)    #calculate average temperature in regime
-    rho=density(Tave)          #calculate average density of regime
-    return rho*v*params.Ax          #output kg/s
 
 #___________________________________________________________________________
 
@@ -119,6 +102,7 @@ def TempRxtyChange(previous,current):      #input Celcius
 
 L = loop.Ri2-loop.Ro                                       #calculate out of core path length
 H = loop.Ro-loop.Ri1                                       #calculate in core path length
+
 def FlowRxty(T_x):                                    #input Celcius
     v=base_to_centi(Velo(T_x))                               #calculate fluid velocity
     rho = -(L/(L+H))*params.beta_eff*(1-np.exp(-params.alphaF*v)) #unitless

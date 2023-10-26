@@ -1,9 +1,33 @@
-import loop, params, functions
+import loop, functions
 import numpy as np
+
+def newinitial(T_hot,Q):
+    '''
+    null
+    '''
+    
+    T_xchimney = T_hot*np.ones(len(loop.xchimney))
+    E_xchimney = functions.T2mu(T_xchimney)
+    
+    LHR_hex = -Q/len(loop.xhex)
+    E_xhex = np.arange(len(loop.xhex))*LHR_hex+E_xchimney[-1]
+    
+    E_xdowncomer = E_xhex[-1]*np.ones(len(loop.xdowncomer))
+    
+    E_xcore = np.linspace(E_xdowncomer[-1],E_xchimney[1],num=len(loop.xcore))
+    
+    print(len(E_xcore),len(loop.xcore))
+    print(len(E_xchimney),len(loop.xchimney))
+    print(len(E_xhex),len(loop.xhex))
+    print(len(E_xdowncomer),len(loop.xdowncomer))
+    
+    E_x = np.concatenate((E_xcore,E_xchimney,E_xhex,E_xdowncomer))
+    T_x = functions.mu2T(E_x)
+    return T_x
 
 def initial(T_hot,T_cold):
     '''
-    Converts hot temperature and cold temperature to mass in the control volume times internal energy of the control volume, uses those to define linear arrays in the heat transfer regimes, then converts those arrays back to temperature. Concatenates the regime arrays into a total temperature profile array.
+    Define linear arrays in the heat transfer regimes, then converts those arrays back to temperature. Concatenates the regime arrays into a total temperature profile array.
     '''
     T_xcore = np.linspace(T_cold,T_hot,num=len(loop.xcore))
     T_xchimney = T_hot*np.ones(len(loop.xchimney))
@@ -12,9 +36,9 @@ def initial(T_hot,T_cold):
     T_x =  np.concatenate((T_xcore,T_xchimney,T_xhex,T_xdowncomer))
     return T_x
 
-#_______________________________________________________________________
+#________________________________________________________________________
 '''
-These four functions split the full temperature array into regime arrays
+These six functions split the full temperature array into regime arrays
 '''
 def core(T_x):
     T_xcore = np.split(T_x,[loop.xcore[-1]+1])[0]
@@ -32,16 +56,21 @@ def downcomer(T_x):
     T_xdowncomer = np.split(T_x,[loop.xdowncomer[0]])[1]
     return T_xdowncomer
     
+def coldleg(T_x):
+    T_xcoldleg = np.split(T_x,[loop.HEXi,loop.bottom])[1]
+    return T_xcoldleg
+    
+def hotleg(T_x):
+    T_xhotleg = np.split(T_x,[loop.top])[0]
+    return T_xhotleg
 
-#_______________________________________________________________________
+#________________________________________________________________________
 
-
-# Advance the temperature profile from one time step to the next.
 def advance(T_x,velo,Qcore,Qhex):
     '''
     This function is the heart of the simulator. It rounds and converts the velocity to an integer mm/s. It generates power arrays where the core and heat exchanger have linear heat rates, with edge effects being considered to account for the fact that not some of the distance traversed is done in the riser or downcomer. The temperature profile is then converted to energy. It follows a uniform state uniform flow assumption where the change in energy is equal to the fluid internal energy entering minus the fluid internal energy entering, plus the heat into the control volume. It neglects gravemetric, kinetic, and PV differentials, as in liquids the temperature/heat capacity effects dominate. The entering fluid is obtained by "rolling" back the energy array by the velocity (times the timestep length), again considering edge effects. The new energy array is computed and converted to temperature, then returned to simulation.py
     '''
-    velo=int(round(functions.base_to_milli(velo),0))
+    velo=int(round(functions.base_to_centi(velo),0))
     
     LHRcore=Qcore/len(loop.xcore) #kW/mm
     LHRhex=-Qhex/len(loop.xhex)    #kW/mm

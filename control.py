@@ -6,6 +6,7 @@ Control = 'Off'
 bias = 120.14
 gain = {'On':1e-4, 'Off':0}
 
+
 def drum(Qhex,Qcore):
     error = Qhex-Qcore
     angle = bias + gain[Control]*error

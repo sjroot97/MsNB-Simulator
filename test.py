@@ -4,17 +4,12 @@ import matplotlib.pyplot as plt
 import copy
 import loop, initial, TempProfile, plots, functions, params
 
-print(functions.coeff)
-E = functions.EnergyArray
-T = functions.TempArray
-T_calc = functions.mu2T(E)
-print(T_calc-T)
-plt.figure()
-plt.plot(E,functions.TempArray)
-plt.plot(E,T_calc)
-plt.show()
+velos = np.linspace(0.001,0.15,num=100)
+flowreacs = functions.FlowRxty(velos)
 
-plt.plot(E,T_calc-T)
+plt.figure()
+plt.plot(velos,flowreacs)
+
 plt.show()
 
 

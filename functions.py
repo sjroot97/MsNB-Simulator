@@ -48,7 +48,7 @@ def density(T):                              #input Celcius
         
 def T2mu(T):
     Tref = 600
-    m_x = density(T)*(params.Ax*.01) #kg
+    m_x = density(T)*(params.Ax*.001) #kg
     u_x = cp((T+Tref)/2)*(T-Tref)
     E_x = m_x*u_x
     return E_x
@@ -58,7 +58,7 @@ def T2mu(T):
 TempArray = np.linspace(600,800,num=1000)
 EnergyArray = T2mu(TempArray)
 
-coeff = np.polyfit(EnergyArray,TempArray,3)
+coeff = np.polyfit(EnergyArray,TempArray,6)
 
 def mu2T(E):
     value = np.zeros(len(E))
@@ -83,7 +83,7 @@ def Velo(T_x):                                 #input Celcius
     if v_squared<0.01**2:    v_squared=0.01**2
     if v_squared>0.15**2:    v_squared=0.15**2
     v = np.sqrt(v_squared)   #output m/s
-    return v# 0.05 #m/s
+    return 0.019#v# 0.05 #m/s
 #___________________________________________________________________________
 
 
@@ -104,7 +104,9 @@ L = loop.Ri2-loop.Ro                                       #calculate out of cor
 H = loop.Ro-loop.Ri1                                       #calculate in core path length
 
 def FlowRxty(T_x):                                    #input Celcius
-    v=base_to_centi(Velo(T_x))                               #calculate fluid velocity
+    v=base_to_centi(Velo(T_x))
+    
+    # #calculate fluid velocity
     rho = -(L/(L+H))*params.beta_eff*(1-np.exp(-params.alphaF*v)) #unitless
     return rho
 #___________________________________________________________________________

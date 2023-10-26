@@ -70,7 +70,7 @@ def advance(T_x,velo,Qcore,Qhex):
     '''
     This function is the heart of the simulator. It rounds and converts the velocity to an integer mm/s. It generates power arrays where the core and heat exchanger have linear heat rates, with edge effects being considered to account for the fact that not some of the distance traversed is done in the riser or downcomer. The temperature profile is then converted to energy. It follows a uniform state uniform flow assumption where the change in energy is equal to the fluid internal energy entering minus the fluid internal energy entering, plus the heat into the control volume. It neglects gravemetric, kinetic, and PV differentials, as in liquids the temperature/heat capacity effects dominate. The entering fluid is obtained by "rolling" back the energy array by the velocity (times the timestep length), again considering edge effects. The new energy array is computed and converted to temperature, then returned to simulation.py
     '''
-    velo=int(round(functions.base_to_centi(velo),0))
+    velo=int(round(functions.base_to_milli(velo),0))
     
     LHRcore=Qcore/len(loop.xcore) #kW/mm
     LHRhex=-Qhex/len(loop.xhex)    #kW/mm

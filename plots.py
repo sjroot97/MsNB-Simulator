@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.ticker import FormatStrFormatter,ScalarFormatter,FuncFormatter
+from adjustText import adjust_text
 
 import numpy as np
 import glob
@@ -54,24 +55,38 @@ def t_vs_reac(t,Flow,Temp,Total):
     plt.clf()
     plt.close()
     
-def reac_phase(Flow,Temp):
+def reac_phase(Flow,Temp,Times):
     plt.figure()
     plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%.d pcm'))
     plt.gca().xaxis.set_major_formatter(FormatStrFormatter('%.d pcm'))
     Flow,Temp = np.array(Flow)*1e5,np.array(Temp)*1e5
     max = np.max(np.array([np.max(Temp),-np.max(Flow)]))
     min = np.min(np.array([np.min(Temp),-np.min(Flow)]))
+    pad = 3
+    plt.xlim(min-pad,max+pad)
+    plt.ylim(-max-pad,-min+pad)
     
-    plt.plot(Temp,Flow)
-    plt.plot([max,min],[-max,-min],linestyle=':',color='black')
-    plt.scatter(Temp[0],Flow[0],color='green',zorder=10)
-    plt.scatter(Temp[-1],Flow[-1],color='red',zorder=10)
+    plt.plot(Temp,Flow,color='blue')
+    plt.plot([max,min],[-max,-min],linestyle=':',color='black',alpha=0.5)
+    timeslices = np.cumsum(np.trim_zeros(np.array(Times),'b'))
+    plt.scatter(Temp[timeslices],Flow[timeslices],color='darkorange',zorder=5)
 
+    ts = []
+    for t,F,T in zip(timeslices,Flow[timeslices],Temp[timeslices]):
+        text = f'  {t//60} min  '
+        ts.append(plt.text(T,F,text))
+    #    plt.annotate(text,(T,F),(T+o[0],F+o[1]),arrowprops={'arrowstyle':'->'},zorder=15)
+    
+ 
+    plt.tight_layout()
+    xavoid = np.concatenate((Temp,np.linspace(max,min,num=100)))
+    yavoid = np.concatenate((Flow,np.linspace(-max,-min,num=100)))
+    adjust_text(ts,x=xavoid,y=yavoid,force_text=0.2,force_points=0.2,arrowprops={'arrowstyle':'->','color':'darkorange'})
     plt.xlabel('Temperature Reactivity')
     plt.ylabel('Flow Reactivity')
-    plt.locator_params(axis='both', nbins=6)
-     
-    plt.tight_layout()
+    
+    plt.gca().locator_params(axis='both', nbins=6)
+    
     plt.title('Passive Feedback Phase Space')
     plt.savefig("img/reac_phase.png",bbox_inches='tight')
     plt.clf()

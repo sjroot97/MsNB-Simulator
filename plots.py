@@ -1,9 +1,12 @@
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib.ticker import FormatStrFormatter,ScalarFormatter,FuncFormatter
+
 import numpy as np
 import glob
 from PIL import Image
 import os
-import TempProfile, functions, loop
+import TempProfile, functions, loop, control
 
 def x_vs_Tx(path,t,T_x,Tmin,Tmax):
     ymin=Tmin
@@ -24,31 +27,58 @@ def x_vs_Tx(path,t,T_x,Tmin,Tmax):
     plt.close()
 
 def t_vs_Q(t,Qhex,Qcore):
-    plt.figure()
-    plt.plot(t/60,Qhex,label='Heat Exchanger')
+    plt.figure(figsize=(8,4.5))
+    plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%.2f MW'))
+    plt.plot(t/60,Qhex/1e3,label='Heat Exchanger')
     if Qcore != None:
-        plt.plot(t/60,Qcore, label='Core')
+        Qcore = np.array(Qcore)
+        plt.plot(t/60,Qcore/1e3, label='Core')
         plt.legend(loc='best')
     plt.xlabel('time, t (min)')
-    plt.ylabel('Heat Exchanger Power Demand at time t, Q_hex(t) (kW)')
+    plt.ylabel('Power duty and load vs. time')
     plt.savefig("img/t_vs_Qt.png")
     plt.clf()
     plt.close()
 
 def t_vs_reac(t,Flow,Temp,Total):
-    plt.figure()
-    plt.plot(t/60,Flow,label='Flow Reactivity')
-    plt.plot(t/60,Temp, label='Temperature Reactivity')
-    plt.plot(t/60,Total, label='Reactivity')
+    plt.figure(figsize=(8,4.5))
+    plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%d pcm'))
+    Flow,Temp,Total = np.array(Flow),np.array(Temp),np.array(Total)
+    plt.plot(t/60,Flow*1e5,label='Flow Reactivity')
+    plt.plot(t/60,Temp*1e5, label='Temperature Reactivity')
+    plt.plot(t/60,Total*1e5, label='Reactivity')
     plt.xlabel('time, t (min)')
     plt.ylabel('Reactivity')
     plt.legend(loc='best')
     plt.savefig("img/t_vs_reac.png")
     plt.clf()
     plt.close()
+    
+def reac_phase(Flow,Temp):
+    plt.figure()
+    plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%.d pcm'))
+    plt.gca().xaxis.set_major_formatter(FormatStrFormatter('%.d pcm'))
+    Flow,Temp = np.array(Flow)*1e5,np.array(Temp)*1e5
+    max = np.max(np.array([np.max(Temp),-np.max(Flow)]))
+    min = np.min(np.array([np.min(Temp),-np.min(Flow)]))
+    
+    plt.plot(Temp,Flow)
+    plt.plot([max,min],[-max,-min],linestyle=':',color='black')
+    plt.scatter(Temp[0],Flow[0],color='green',zorder=10)
+    plt.scatter(Temp[-1],Flow[-1],color='red',zorder=10)
+
+    plt.xlabel('Temperature Reactivity')
+    plt.ylabel('Flow Reactivity')
+    plt.locator_params(axis='both', nbins=6)
+     
+    plt.tight_layout()
+    plt.title('Passive Feedback Phase Space')
+    plt.savefig("img/reac_phase.png",bbox_inches='tight')
+    plt.clf()
+    plt.close()
 
 def t_vs_exp(t,exp):
-    plt.figure()
+    plt.figure(figsize=(8,4.5))
     plt.plot(t/60,exp)
     plt.xlabel('time, t (min)')
     plt.ylabel('dT (sec) per Reactor Period (sec)')
@@ -57,22 +87,29 @@ def t_vs_exp(t,exp):
     plt.close()
 
 def t_vs_velo(t,v):
-    plt.figure()
-    plt.plot(t/60,v)
+    plt.figure(figsize=(8,4.5))
+    plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%.2f cm/s'))
+    v=np.array(v)
+    plt.plot(t/60,v*100)
     plt.xlabel('time, t (min)')
-    plt.ylabel('velocity, v (m/sec)')
+    plt.ylabel('velocity, v (cm/sec)')
     plt.savefig("img/t_vs_velocity.png")
     plt.clf()
     plt.close()
 
 def t_vs_angle(t,theta):
-    plt.figure()
-    plt.ylim(120.139,120.141)
-    plt.xlim(t[0],t[-1]/60)
+    offset = np.floor(control.bias)
+    theta -= offset
+    fig,ax = plt.subplots(figsize=(8,4.5))
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f°'))
+    #plt.ylim(np.floor(np.min(theta)),t[-1]/60)
     #plt.yticks(np.array([0,15,30,45,60,75,90,105,120,135,150,165,180]))
+    plt.text(0,1.01,f'+{offset}°',transform=ax.transAxes)
     plt.plot(t/60,theta)
+
     plt.xlabel('time, t (min)')
-    plt.ylabel("Control Drum Orientation (°)")
+    plt.ylabel("Control Drum Orientation")
+
     plt.savefig("img/t_vs_angle.png")
     plt.clf()
     plt.close()

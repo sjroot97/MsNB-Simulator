@@ -12,7 +12,7 @@ plots.kill()
 '''
 The algorithm function in the file initial.py uses binary search to identify the cold temperature that when paired with a hot temperature of 700 C gives the desired power output. It uses the natural circulation flow rate, heat capacity, and temperature difference to calculate the power for a given cold temperature, and adjusts the cold temperature as needed based on the result. 
 '''
-Q = 100
+Q = 8000 #kW
 if Q <=0:
     print('The reactor power is calculated using an exponential. Use a positive initial power. This code cannot simulate bringing up to hot-standby')
     exit()
@@ -36,10 +36,10 @@ plots.x_vs_Tx("img/animateTx_t/t-0.png",0.0,T_x,T_cold,T_hot)
 '''
 Q0 is calculated above, Q1 is the power after the first power change, Q2 is the power after the second power change. tlen is the total time in seconds of the simulation (3600sec = 1hr). t01 is the time over which the first power change occurs (ramp function ~ use t01 = 0 for step response). t1 is the time in seconds for which the reactor is held at Q1. t12 is the time in seconds over which the second power change occurs. t2 is calculated and is the time between the end of the second power change and the end of the simulation
 '''
-Q1,Q2 = 1000,10000
+Q1,Q2 = 8000,6000
 #Q1,Q2 = Q0,Q0
 
-t0,t01,t1,t12,t2 = 1800,1800,1800,1800,1800
+t0,t01,t1,t12,t2 = 0,0,600,600,600
 tlen= t0+t01+t1+t12+t2
 
 print('set up HEX transient')
@@ -112,12 +112,13 @@ plots.t_vs_reac(t,Freac_t,Treac_t,reac_t)
 plots.t_vs_exp(t,exponent)
 plots.t_vs_velo(t,v_t)
 plots.t_vs_angle(t,CDtheta_t)
+plots.reac_phase(Freac_t,Treac_t)
 
 print('plotting temperature profiles')
 Tmin = np.min(np.array(T_x_t))
 Tmax = np.max(np.array(T_x_t))
 
-#exit()
+exit()
 
 for step, T_x in tqdm(zip(t[1:],T_x_t),total=len(T_x_t)):
     if step*params.dt%60 ==0:

@@ -83,7 +83,7 @@ def Velo(T_x):                                 #input Celcius
     if v_squared<0.01**2:    v_squared=0.01**2
     if v_squared>0.15**2:    v_squared=0.15**2
     v = np.sqrt(v_squared)   #output m/s
-    return 0.019#v# 0.05 #m/s
+    return v# 0.05 #m/s
 #___________________________________________________________________________
 
 

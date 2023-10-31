@@ -75,9 +75,7 @@ def reac_phase(Flow,Temp,Times):
     for t,F,T in zip(timeslices,Flow[timeslices],Temp[timeslices]):
         text = f'  {t//60} min  '
         ts.append(plt.text(T,F,text))
-    #    plt.annotate(text,(T,F),(T+o[0],F+o[1]),arrowprops={'arrowstyle':'->'},zorder=15)
-    
- 
+
     plt.tight_layout()
     xavoid = np.concatenate((Temp,np.linspace(max,min,num=100)))
     yavoid = np.concatenate((Flow,np.linspace(-max,-min,num=100)))

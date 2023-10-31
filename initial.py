@@ -12,7 +12,7 @@ def MassFlow(T_x):     #input Celcius
     v = functions.Velo(T_x)            #calculate fluid velocity
     rho=functions.density(functions.list_ave(TempProfile.hex(T_x))) #calculate average density of regime
     return rho*v*params.Ax,v          #output kg/s
-#________________________________________________________________________
+#_______________________________________________________________
 
 def Power(Th,Tc):                 #Input Celcius
     '''This function is called by algorithm in this file.'''

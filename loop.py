@@ -6,8 +6,8 @@ Ri1 = 0
 Ro = 1660
 top = 2090
 HEXi = 2340
-HEXo = 2820
-bottom = 4970
+HEXo = 2825
+bottom = 4975
 Ri2 = 5710
 
 #Define Loop

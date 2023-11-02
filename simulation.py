@@ -68,7 +68,8 @@ T_x_t = [T_x]
 Freac_t = [functions.FlowRxty(T_x)]
 Treac_t = [-Freac_t[0]]
 
-CDtheta_t = [controller.drum(Qhex_t[0],Qcore_t[0])]
+error_t = [0]
+CDtheta_t = [controller.drum(error_t,True)]
 Creac_t = [controller.feedback(CDtheta_t[0])]
 
 reac_t=[Freac_t[0]+Treac_t[0]+Creac_t[0]]
@@ -88,7 +89,8 @@ for step in tqdm(t[1:]):
     Freac_t.append(functions.FlowRxty(T_x))
     Treac_t.append(Treac_t[-1] + functions.TempRxtyChange(T_x_t[-2],T_x_t[-1]))
 
-    CDtheta_t.append(controller.drum(Qcore_SP[step],Qcore_t[-1]))
+    error_t.append(Qcore_SP[step]-Qcore_t[-1])
+    CDtheta_t.append(controller.drum(error_t,step==tlen-t2))
     Creac_t.append(controller.feedback(CDtheta_t[-1]))
 
     reac_t.append(Freac_t[-1]+Treac_t[-1]+Creac_t[-1])

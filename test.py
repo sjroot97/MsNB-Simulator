@@ -1,17 +1,17 @@
-import numpy as np
-import matplotlib.pyplot as plt
-#from pynverse import inversefunc
-import copy
-import loop, initial, TempProfile, plots, functions, params
 
-velos = np.linspace(0.001,0.15,num=100)
-flowreacs = functions.FlowRxty(velos)
 
-plt.figure()
-plt.plot(velos,flowreacs)
+def test(error):
+    global cumu_error
+    if e==1:
+        cumu_error = 0
+    cumu_error += error
+    
+error = [1,2,3]
 
-plt.show()
-
+for e in error:
+    test(e)
+    
+print(cumu_error)
 
 
 

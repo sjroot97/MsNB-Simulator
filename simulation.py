@@ -1,6 +1,6 @@
 import os; os.system('cls')
 print('import libraries')
-import initial, params, loop, plots, functions, TempProfile, control
+import initial, params, loop, plots, functions, TempProfile, controller
 import numpy as np
 #from scipy.signal import argrelextrema
 from tqdm import tqdm as tqdm
@@ -39,7 +39,7 @@ Q0 is calculated above, Q1 is the power after the first power change, Q2 is the 
 Q1,Q2 = 10000,8000
 #Q1,Q2 = Q0,Q0
 
-t0,t01,t1,t12,t2 = 600,600,600,600,600
+t0,t01,t1,t12,t2 = 600,300,3000,300,3000
 times = (0,t0,t01,t1,t12,t2)
 tlen= t0+t01+t1+t12+t2
 
@@ -51,8 +51,12 @@ Q11 = Q1*np.ones(t1)
 Q12 = np.linspace(Q1,Q2,num=t12)
 Q22 = Q2*np.ones(t2+1)
 Qhex_t = np.concatenate((Q00,Q01,Q11,Q12,Q22))
-plots.t_vs_Q(t,Qhex_t,None)
+pf_tau = len(loop.xdowncomer)/functions.base_to_milli(v)
+print(pf_tau)
+Qcore_SP = list(controller.prefilter(Qhex_t,t,pf_tau))
+plots.t_vs_Q(t,Qhex_t,Qcore_SP)
 
+exit()
 #FEM
 '''
 With the problem defined, the 1D+time finite element model is set-up. Time arrays are initialized for the core power, flow velocity, and temperature profile, as well as reactivity. The flow reactivity is calculated, while the temperature reactivity is set to the inverse, on the assumption that the reactor is initially critical. The control drums will start at the bias point, so their reactivity is null. Then the period and reactivity rate of change are set to zero, again on the steady state critical assumption.
@@ -65,8 +69,8 @@ T_x_t = [T_x]
 Freac_t = [functions.FlowRxty(T_x)]
 Treac_t = [-Freac_t[0]]
 
-CDtheta_t = [control.drum(Qhex_t[0],Qcore_t[0])]
-Creac_t = [control.feedback(CDtheta_t[0])]
+CDtheta_t = [controller.drum(Qhex_t[0],Qcore_t[0])]
+Creac_t = [controller.feedback(CDtheta_t[0])]
 
 reac_t=[Freac_t[0]+Treac_t[0]+Creac_t[0]]
 reac_dot_t = [0]
@@ -85,8 +89,8 @@ for step in tqdm(t[1:]):
     Freac_t.append(functions.FlowRxty(T_x))
     Treac_t.append(Treac_t[-1] + functions.TempRxtyChange(T_x_t[-2],T_x_t[-1]))
 
-    CDtheta_t.append(control.drum(Qhex_t[step],Qcore_t[-1]))
-    Creac_t.append(control.feedback(CDtheta_t[-1]))
+    CDtheta_t.append(controller.drum(Qhex_t[step],Qcore_t[-1]))
+    Creac_t.append(controller.feedback(CDtheta_t[-1]))
 
     reac_t.append(Freac_t[-1]+Treac_t[-1]+Creac_t[-1])
     reac_dot_t.append(functions.RoC(reac_t[-2], reac_t[-1]))

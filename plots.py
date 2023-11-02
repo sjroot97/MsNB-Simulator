@@ -7,7 +7,7 @@ import numpy as np
 import glob
 from PIL import Image
 import os
-import TempProfile, functions, loop, control
+import TempProfile, functions, loop, controller
 
 def x_vs_Tx(path,t,T_x,Tmin,Tmax):
     ymin=Tmin
@@ -60,8 +60,8 @@ def reac_phase(Flow,Temp,Times):
     plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%.d pcm'))
     plt.gca().xaxis.set_major_formatter(FormatStrFormatter('%.d pcm'))
     Flow,Temp = np.array(Flow)*1e5,np.array(Temp)*1e5
-    max = np.max(np.array([np.max(Temp),-np.max(Flow)]))
-    min = np.min(np.array([np.min(Temp),-np.min(Flow)]))
+    max = np.max(np.array([np.max(Temp),-np.min(Flow)]))
+    min = np.min(np.array([np.min(Temp),-np.max(Flow)]))
     pad = 3
     plt.xlim(min-pad,max+pad)
     plt.ylim(-max-pad,-min+pad)
@@ -111,7 +111,7 @@ def t_vs_velo(t,v):
     plt.close()
 
 def t_vs_angle(t,theta):
-    offset = np.floor(control.bias)
+    offset = np.floor(controller.bias)
     theta -= offset
     fig,ax = plt.subplots(figsize=(8,4.5))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f°'))
@@ -141,4 +141,5 @@ def kill():
     dir= 'img'
     for f in os.listdir(dir):
         if os.path.isfile(os.path.join(dir,f)):
-            os.remove(os.path.join(dir,f))
+            pass
+            #os.remove(os.path.join(dir,f))

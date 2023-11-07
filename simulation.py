@@ -52,7 +52,6 @@ Q12 = np.linspace(Q1,Q2,num=t12)
 Q22 = Q2*np.ones(t2+1)
 Qhex_t = np.concatenate((Q00,Q01,Q11,Q12,Q22))
 pf_tau = len(loop.xdowncomer)/functions.base_to_milli(v)
-print(pf_tau)
 Qcore_SP = list(controller.prefilter(Qhex_t,t,pf_tau))
 plots.t_vs_Q(t,Qhex_t,None,Qcore_SP)
 
@@ -68,8 +67,8 @@ T_x_t = [T_x]
 Freac_t = [functions.FlowRxty(T_x)]
 Treac_t = [-Freac_t[0]]
 
-error_t = [0]
-CDtheta_t = [controller.drum(error_t)]
+error = 0
+CDtheta_t = [controller.drum(error)]
 Creac_t = [controller.angle2reac(CDtheta_t[0])]
 
 reac_t=[Freac_t[0]+Treac_t[0]+Creac_t[0]]
@@ -89,8 +88,7 @@ for step in tqdm(t[1:]):
     Freac_t.append(functions.FlowRxty(T_x))
     Treac_t.append(Treac_t[-1] + functions.TempRxtyChange(T_x_t[-2],T_x_t[-1]))
 
-    error_t.append(Qcore_SP[step]-Qcore_t[-1])
-    CDtheta_t.append(controller.drum(error_t))
+    CDtheta_t.append(controller.drum(Qcore_SP[step]-Qcore_t[-1]))
     Creac_t.append(controller.angle2reac(CDtheta_t[-1]))
 
     reac_t.append(Freac_t[-1]+Treac_t[-1]+Creac_t[-1])

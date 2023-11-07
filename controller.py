@@ -26,17 +26,18 @@ KD = KP*tau_der
 angle_memory = bias
 
 cumu_error = 0
+error_memory = 0
 def drum(error):
-    inst_error = error[-1]
+    inst_error = error
     global cumu_error  #preserve cumulative error from one call to next
-    cumu_error += error[-1]
+    cumu_error += error
+    global error_memory #preserve previous error
+    roc_error = functions.RoC(error_memory, error)
     
-    try: roc_error = functions.RoC(error[-2], error[-1])
-    except IndexError: roc_error = 0 #Set initial error rate of change to zero
     
     angle = bias + KP*inst_error \
           + KI*cumu_error \
-          #+ KD*roc_error
+          + KD*roc_error
 
     return angle
 
@@ -45,6 +46,7 @@ coeff = [-2.79662670e-09,
          -4.36111940e-04,
          4.82874795e-02,
          -2.00900479e+00]
+
 def angle2reac(angle):
     reac = 0
     if not Control:

@@ -39,7 +39,7 @@ Q0 is calculated above, Q1 is the power after the first power change, Q2 is the 
 Q1,Q2 = 10000,8000
 #Q1,Q2 = Q0,Q0
 
-t0,t01,t1,t12,t2 = 600,0,3000,0,0
+t0,t01,t1,t12,t2 = 300,300,600,300,600
 times = (0,t0,t01,t1,t12,t2)
 tlen= t0+t01+t1+t12+t2
 
@@ -54,7 +54,7 @@ Qhex_t = np.concatenate((Q00,Q01,Q11,Q12,Q22))
 pf_tau = len(loop.xdowncomer)/functions.base_to_milli(v)
 print(pf_tau)
 Qcore_SP = list(controller.prefilter(Qhex_t,t,pf_tau))
-plots.t_vs_Q(t,Qhex_t,Qcore_SP)
+plots.t_vs_Q(t,Qhex_t,None,Qcore_SP)
 
 #FEM
 '''
@@ -69,8 +69,8 @@ Freac_t = [functions.FlowRxty(T_x)]
 Treac_t = [-Freac_t[0]]
 
 error_t = [0]
-CDtheta_t = [controller.drum(error_t,True)]
-Creac_t = [controller.feedback(CDtheta_t[0])]
+CDtheta_t = [controller.drum(error_t)]
+Creac_t = [controller.angle2reac(CDtheta_t[0])]
 
 reac_t=[Freac_t[0]+Treac_t[0]+Creac_t[0]]
 reac_dot_t = [0]
@@ -90,8 +90,8 @@ for step in tqdm(t[1:]):
     Treac_t.append(Treac_t[-1] + functions.TempRxtyChange(T_x_t[-2],T_x_t[-1]))
 
     error_t.append(Qcore_SP[step]-Qcore_t[-1])
-    CDtheta_t.append(controller.drum(error_t,step==tlen-t2))
-    Creac_t.append(controller.feedback(CDtheta_t[-1]))
+    CDtheta_t.append(controller.drum(error_t))
+    Creac_t.append(controller.angle2reac(CDtheta_t[-1]))
 
     reac_t.append(Freac_t[-1]+Treac_t[-1]+Creac_t[-1])
     reac_dot_t.append(functions.RoC(reac_t[-2], reac_t[-1]))
@@ -113,12 +113,13 @@ for step in tqdm(t[1:]):
     Qcore_t.append(Q)
 
 print('plotting time arrays')
-plots.t_vs_Q(t,Qhex_t,Qcore_t)
+plots.t_vs_Q(t,Qhex_t,Qcore_t,Qcore_SP)
 plots.t_vs_reac(t,Freac_t,Treac_t,reac_t)
 plots.t_vs_exp(t,exponent)
 plots.t_vs_velo(t,v_t)
 plots.t_vs_angle(t,CDtheta_t)
-plots.reac_phase(Freac_t,Treac_t,times)
+plots.auto_reac_phase(Freac_t,Treac_t,times)
+plots.contr_reac_phase(Freac_t,Treac_t,Creac_t,times)
 
 print('plotting temperature profiles')
 Tmin = np.min(np.array(T_x_t))

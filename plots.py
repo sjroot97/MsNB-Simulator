@@ -1,13 +1,11 @@
 import matplotlib.pyplot as plt
-import matplotlib as mpl
-from matplotlib.ticker import FormatStrFormatter,ScalarFormatter,FuncFormatter
+from matplotlib.ticker import FormatStrFormatter
 from adjustText import adjust_text
-
 import numpy as np
 import glob
 from PIL import Image
 import os
-import TempProfile, functions, loop, controller
+import TempProfile, loop, controller
 
 def x_vs_Tx(path,t,T_x,Tmin,Tmax):
     ymin=Tmin

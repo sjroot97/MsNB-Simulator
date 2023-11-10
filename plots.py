@@ -26,7 +26,7 @@ def x_vs_Tx(path,t,T_x,Tmin,Tmax):
     plt.close()
 
 def t_vs_Q(t,Qhex,Qcore,SP):
-    plt.figure(figsize=(8,4.5))
+    fig,ax = plt.subplots(figsize=(8,4.5))
     plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%.2f MW'))
     plt.plot(t/60,Qhex/1e3,label='Heat Exchanger',color='blue')
     plt.plot(t/60,np.array(SP)/1e3, label='Core Set-Point',color='orange',linestyle=':')
@@ -36,6 +36,27 @@ def t_vs_Q(t,Qhex,Qcore,SP):
     plt.legend(loc='best')
     plt.xlabel('time, t (min)')
     plt.ylabel('Power duty and load vs. time')
+    
+    Quant = False
+    if Quant:
+        ax.grid(b=True, which='both', color='gray', linestyle='-')
+        start = Qhex[0]/1e3
+        stop =  Qhex[-1]/1e3
+        step = stop-start
+        
+        print(f'minimum {np.min(Qcore)}')
+        print(f'maximum {np.max(Qcore)}')
+        
+        delay = start+0.1*step
+        rise = start+0.9*step
+        settlelow,settlehigh =stop - 0.05*step, stop + 0.05*step
+        
+        plt.axhline(delay, linestyle=":",color='black') #delaytime 10%
+        plt.axhline(rise, linestyle=":",color='black')
+        plt.axhline(settlelow, linestyle=":",color='black')
+        plt.axhline(settlehigh, linestyle=":",color='black')
+        plt.show()
+    
     plt.savefig("img/t_vs_Qt.png")
     plt.clf()
     plt.close()

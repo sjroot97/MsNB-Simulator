@@ -38,11 +38,11 @@ plots.x_vs_Tx("img/animateTx_t/t-0.png",0.0,T_x,T_cold,T_hot)
 Q0 is calculated above, Q1 is the power after the first power change, Q2 is the power after the second power change. tlen is the total time in seconds of the simulation (3600sec = 1hr). t01 is the time over which the first power change occurs (ramp function ~ use t01 = 0 for step response). t1 is the time in seconds for which the reactor is held at Q1. t12 is the time in seconds over which the second power change occurs. t2 is calculated and is the time between the end of the second power change and the end of the simulation
 '''
 
-#Q1,Q2 = 8000,10000
-Q1 = Q2 = 10000
+Q1,Q2 = 10000,8000
+#Q1 = Q2 = 10000
 #Q1,Q2 = Q0,Q0
 
-t0,t01,t1,t12,t2 = 300,0,3300,0,0
+t0,t01,t1,t12,t2 = 300,300,600,300,1800
 times = (0,t0,t01,t1,t12,t2)
 tlen= t0+t01+t1+t12+t2
 
@@ -120,7 +120,8 @@ plots.t_vs_exp(t,exponent)
 plots.t_vs_velo(t,v_t)
 plots.t_vs_angle(t,CDtheta_t)
 plots.auto_reac_phase(Freac_t,Treac_t,times)
-plots.contr_reac_phase(Freac_t,Treac_t,Creac_t,times)
+if controller.Control:
+    plots.contr_reac_phase(Freac_t,Treac_t,Creac_t,times)
 
 print('plotting temperature profiles')
 Tmin = np.min(np.array(T_x_t))

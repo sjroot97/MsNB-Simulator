@@ -43,8 +43,8 @@ def t_vs_Q(t,Qhex,Qcore,SP):
     Quant = False
     if Quant:
         ax.grid(b=True, which='both', color='gray', linestyle='-')
-        start = Qhex[0]/1e3
-        stop =  Qhex[-1]/1e3
+        start = 1#Qhex[0]/1e3
+        stop =  .1#Qhex[-1]/1e3
         step = stop-start
         
         print(f'minimum {np.min(Qcore)}')

@@ -13,8 +13,8 @@ def prefilter(Qhex,time,tau):
     return Qcore_SP
 
 #Proportional Control Loop
-#Control = True
-Control = False
+Control = True
+#Control = False
 bias = 111.41092285851987
 Ku,Tu = 3e-4,45
 KP = 0.45*Ku

@@ -8,12 +8,12 @@ import os
 import TempProfile, loop, controller
 
 def x_vs_Tx(path,t,T_x,Tmin,Tmax):
-    plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%.2f (°C)'))
-    plt.gca().xaxis.set_major_formatter(FormatStrFormatter('%.0f mm'))
     ymin=Tmin
     ymax=Tmax
 
     plt.figure(figsize=(8,4.5))
+    plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%.2f °C'))
+    plt.gca().xaxis.set_major_formatter(FormatStrFormatter('%.0f mm'))
     plt.ylim(ymin-1, ymax+1)
     plt.plot(loop.xcore, TempProfile.core(T_x), label='core', color = 'red')
     plt.plot(loop.xchimney, TempProfile.chimney(T_x), label='chimney', color = 'orange')
@@ -21,7 +21,7 @@ def x_vs_Tx(path,t,T_x,Tmin,Tmax):
     plt.plot(loop.xdowncomer, TempProfile.downcomer(T_x), label='downcomer', color = 'green')
     plt.xlabel('Position along Loop')
     plt.ylabel('Molten Salt Temperature')
-    plt.title('Temperature (°C) along MsNB Loop, t='+ str(int(round(t/60,0)))+ 'min')
+    plt.title('Temperature along MsNB Loop, t='+ str(int(round(t/60,0)))+ 'min')
     plt.legend(loc='best')
     plt.savefig(path)
     plt.clf()
@@ -96,11 +96,15 @@ def auto_reac_phase(Flow,Temp,Times):
     plt.scatter(Temp[timeslices],Flow[timeslices],color='darkorange',zorder=5)
 
     ts,texts = [],[]
-    for t,F,T in zip(timeslices,Flow[timeslices],Temp[timeslices]):
+    txtcoords = [(440,-432),(455,-438),(465,-460),(447,-460),(431,-450),(442,-452)]
+    print(timeslices)
+    for t,F,T,coord in zip(timeslices,Flow[timeslices],Temp[timeslices],txtcoords):
         text = f'  {t//60} min  '
         if text not in texts: 
             texts.append(text)
+            print(text)
             ts.append(plt.text(T,F,text))
+            #plt.annotate(text,(T,F),xytext=coord,arrowprops={'arrowstyle':'->','color':'darkorange'})
 
     plt.tight_layout()
     xavoid = np.concatenate((Temp,np.linspace(max,min,num=100)))
@@ -134,11 +138,13 @@ def contr_reac_phase(Flow,Temp,Control,Times):
     plt.scatter(Passive[timeslices],Control[timeslices],color='darkorange',zorder=5)
 
     ts,texts = [],[]
-    for t,P,C in zip(timeslices,Passive[timeslices],Control[timeslices]):
+    txtcoords = [(3,0),(1,5),(-2,9),(-8,0),(-1,-6),(-9,4)]
+    for t,P,C,coord in zip(timeslices,Passive[timeslices],Control[timeslices],txtcoords):
         text = f'  {t//60} min  '
         if text not in texts: 
             texts.append(text)
             ts.append(plt.text(P,C,text))
+            #plt.annotate(text,(P,C),xytext=coord,arrowprops={'arrowstyle':'->','color':'darkorange'})
         
 
     plt.tight_layout()

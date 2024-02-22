@@ -29,10 +29,11 @@ print(f'Velocity: {round(v*100,1)} cm/s')
 Calls function initial from file TempProfile.py, which assumes linear heat increase in the core, constant hot temperature in the riser/chimney, linear heat decrease in the heat exchanger, and constant cold temperature in the downcomer. It then plots the initial temperature profile 
 '''
 print('set up temperature profile')
-#T_x = TempProfile.(T_hot, T_cold)
 T_x = TempProfile.initial(T_hot, T_cold)
-plots.x_vs_Tx("img/animateTx_t/t-0.png",0.0,T_x,T_cold,T_hot)
+#T_x = TempProfile.newinitial(700,Q)
+plots.x_vs_Tx("img/animateTx_t/t-0.png",0.0,T_x,np.min(T_x),np.max(T_x))
 #exit()
+
 #Initialize HEX transient
 '''
 Q0 is calculated above, Q1 is the power after the first power change, Q2 is the power after the second power change. tlen is the total time in seconds of the simulation (3600sec = 1hr). t01 is the time over which the first power change occurs (ramp function ~ use t01 = 0 for step response). t1 is the time in seconds for which the reactor is held at Q1. t12 is the time in seconds over which the second power change occurs. t2 is calculated and is the time between the end of the second power change and the end of the simulation
@@ -59,7 +60,7 @@ Qhex_t = np.concatenate((Q00,Q01,Q11,Q12,Q22))
 pf_tau = len(loop.xdowncomer)/functions.base_to_milli(v)
 Qcore_SP = list(controller.prefilter(Qhex_t,t,pf_tau))
 plots.t_vs_Q(t,Qhex_t,None,Qcore_SP)
-
+#exit()
 #FEM
 '''
 With the problem defined, the 1D+time finite element model is set-up. Time arrays are initialized for the core power, flow velocity, and temperature profile, as well as reactivity. The flow reactivity is calculated, while the temperature reactivity is set to the inverse, on the assumption that the reactor is initially critical. The control drums will start at the bias point, so their reactivity is null. Then the period and reactivity rate of change are set to zero, again on the steady state critical assumption.

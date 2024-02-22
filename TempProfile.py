@@ -5,7 +5,15 @@ def initial(T_hot,T_cold):
     '''
     Define linear arrays in the heat transfer regimes, then converts those arrays back to temperature. Concatenates the regime arrays into a total temperature profile array.
     '''
-    T_xcore = np.linspace(T_cold,T_hot,num=len(loop.xcore))
+    
+    #Ex_core = functions.T2mu(T_hot)-Q0*np.cumsum(loop.coreprofile)[::-1]
+    
+    #T_xcore = functions.mu2T(Ex_core)
+    
+    dT = T_hot-T_cold
+    T_xcore = T_hot - dT*np.cumsum(loop.coreprofile)[::-1]
+    
+    #T_xcore = np.linspace(T_cold,T_hot,num=len(loop.xcore))
     T_xchimney = T_hot*np.ones(len(loop.xchimney))
     T_xhex = np.linspace(T_hot,T_cold,num=len(loop.xhex))
     T_xdowncomer = T_cold*np.ones(len(loop.xdowncomer))
@@ -49,8 +57,8 @@ def advance(T_x,velo,Qcore,Qhex):
     
     LHRcore=Qcore/len(loop.xcore) #kW/mm
     LHRhex=-Qhex/len(loop.xhex)    #kW/mm
-    Q_core = LHRcore*np.ones(len(loop.xcore))
-    #Q_core = Qcore*loop.coreprofile
+    #Q_core = LHRcore*np.ones(len(loop.xcore))
+    Q_core = Qcore*loop.coreprofile
     Q_core[0:velo] = np.linspace(0,Q_core[velo],num=velo)
     Q_chimney = np.zeros(len(loop.xchimney))
     Q_hex = LHRhex*np.ones(len(loop.xhex))

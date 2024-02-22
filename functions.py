@@ -49,9 +49,9 @@ def density(T):                              #input Celcius
 def T2mu(T):
     Tref = 600
     m_x = density(T)*(params.Ax*.001) #kg
-    u_x = cp((T+Tref)/2)*(T-Tref)
+    u_x = cp((T+Tref)/2)*(T-Tref) #kJ/kg
     E_x = m_x*u_x
-    return E_x
+    return E_x #kJ
 
 #T2mu_inverse = inversefunc(T2mu)
 

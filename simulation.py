@@ -40,9 +40,9 @@ Q0 is calculated above, Q1 is the power after the first power change, Q2 is the 
 
 
 
-Q1,Q2 = 10000,Q0
+#Q1,Q2 = 10000,Q0
 #Q1 = Q2 = 8000
-#Q1,Q2 = Q0,Q0
+Q1,Q2 = Q0,Q0
 
 t0,t01,t1,t12,t2 = 300,300,600,300,2100
 times = (0,t0,t01,t1,t12,t2)
@@ -129,7 +129,7 @@ print('plotting temperature profiles')
 Tmin = np.min(np.array(T_x_t))
 Tmax = np.max(np.array(T_x_t))
 
-exit()
+#exit()
 
 for step, T_x in tqdm(zip(t[1:],T_x_t),total=len(T_x_t)):
     if step*params.dt%60 ==0:
@@ -137,7 +137,7 @@ for step, T_x in tqdm(zip(t[1:],T_x_t),total=len(T_x_t)):
         plots.x_vs_Tx(path, step, T_x, Tmin, Tmax)
 plots.gif('img/animateTx_t')
 
-#exit()#remove if you want to print local mins/maxes
+exit()#remove if you want to print local mins/maxes
 
 maximums = argrelextrema(np.array(Qcore_t),np.greater)
 minimums = argrelextrema(np.array(Qcore_t),np.less)

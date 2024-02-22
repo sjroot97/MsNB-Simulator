@@ -50,6 +50,7 @@ def advance(T_x,velo,Qcore,Qhex):
     LHRcore=Qcore/len(loop.xcore) #kW/mm
     LHRhex=-Qhex/len(loop.xhex)    #kW/mm
     Q_core = LHRcore*np.ones(len(loop.xcore))
+    #Q_core = Qcore*loop.coreprofile
     Q_core[0:velo] = np.linspace(0,Q_core[velo],num=velo)
     Q_chimney = np.zeros(len(loop.xchimney))
     Q_hex = LHRhex*np.ones(len(loop.xhex))

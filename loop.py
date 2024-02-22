@@ -17,3 +17,18 @@ xchimney = np.arange(Ro+1,HEXi)
 xhex = np.arange(HEXi,HEXo+1)
 xdowncomer = np.arange(HEXo+1,Ri2)
 x = np.concatenate((xcore,xchimney,xhex,xdowncomer))
+
+#New code since thesis was published
+#Make non-linear power array
+coreshape = np.sin(np.pi*(xcore+1)/len(xcore))
+coreprofile = coreshape/sum(coreshape) #normalizes
+
+#Check if shape is right. Only executes if you run this file, not when imported
+if __name__ == "__main__":
+    print(np.sum(coreprofile))
+    import matplotlib.pyplot as plt
+    plt.figure()
+    plt.plot(coreshape,xcore)
+    plt.xlabel('Relative Power')
+    plt.ylabel('Height in core')
+    plt.show()

@@ -84,18 +84,23 @@ def DiffP(T_x):                 #input Celcius
     hot=density(list_ave(TempProfile.hotleg(T_x)))
     cold=density(list_ave(TempProfile.coldleg(T_x)))            #calculate average density of cold leg
     return (cold-hot)*params.h*9.81     #output Pa
+
 #___________________________________________________________________________
 
 def Velo(T_x):                                 #input Celcius
     DrivingForce=DiffP(T_x)                    #Convert Differential Pressure
     rho=density(list_ave(T_x))                #Calculate Average Density of entire Loop
     v_squared = (2*DrivingForce)/(params.xi*rho)
-    #if v_squared<0.01**2:    v_squared=0.01**2
-    #if v_squared>0.15**2:    v_squared=0.15**2
     v = np.sqrt(v_squared)   #output m/s
     return v# 0.05 #m/s
 #___________________________________________________________________________
-
+def Velo2nd(T_x,v_old): #input Celcius and m/s
+    DrivingForce=DiffP(T_x)  #output Pa
+    rho=density(list_ave(T_x)) 
+    Friction = (params.xi*rho*v_old**2)/2 #output Pa
+    Pnet = DrivingForce-Friction
+    accel = Pnet/rho/loop.Ri2
+    return v_old+accel*params.dt #output m/s
 
 #___________________________________________________________________________
 

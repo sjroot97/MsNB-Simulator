@@ -87,7 +87,8 @@ The time loop makes the simulator calculate the new values necessary to advance 
 '''
 for step in tqdm(t[1:]):
     T_x = TempProfile.advance(T_x, v ,Qcore_t[-1], Qhex_t[step-1])
-    vnew = functions.Velo(T_x)
+    #vnew = functions.Velo(T_x)
+    vnew = functions.Velo2nd(T_x,v_t[-1])
     v_t.append(vnew)
     T_x_t.append(T_x)
 

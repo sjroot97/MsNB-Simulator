@@ -81,4 +81,7 @@ def advance(T_x,velo,Qcore,Qhex):
     E_x += dE_x
 
     Tnew = functions.mu2T(E_x)
-    return Tnew
+    #return Tnew
+    del2 = np.diff(Tnew,n=2,prepend=Tnew[-1],append=Tnew[0])#K/mm2
+    dTdiffuse = functions.diffusivity(Tnew)*del2
+    return Tnew+dTdiffuse

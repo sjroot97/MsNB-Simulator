@@ -97,12 +97,12 @@ def auto_reac_phase(Flow,Temp,Times):
 
     ts,texts = [],[]
     txtcoords = [(440,-432),(455,-438),(465,-460),(447,-460),(431,-450),(442,-452)]
-    print(timeslices)
+
     for t,F,T,coord in zip(timeslices,Flow[timeslices],Temp[timeslices],txtcoords):
         text = f'  {t//60} min  '
         if text not in texts: 
             texts.append(text)
-            print(text)
+            
             ts.append(plt.text(T,F,text))
             #plt.annotate(text,(T,F),xytext=coord,arrowprops={'arrowstyle':'->','color':'darkorange'})
 

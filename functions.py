@@ -52,7 +52,10 @@ def density(T):                              #input Celcius
 
 def diffusivity(T):
     return 1e6*conductivity(T)/density(T)/cp(T) #output mm2/K
-        
+
+if __name__ == "__main__":
+    print(diffusivity(600))
+    
 def T2mu(T):
     Tref = 600
     m_x = density(T)*(params.Ax*.001) #kg

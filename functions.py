@@ -40,11 +40,18 @@ def RoC(x1,x2): #time rate of change
 def cp(T):                          #input Celcius
     T=absT(T)                       #Convert T to Kelvin
     return (1.0634*T+976.78)/1000          # output kJ/kg-K
-#___________________________________________________________________________
+
+def conductivity(T): #input Celcius
+    T = absT(T)      #convert to Kelvin
+    return (0.36 + 5.6e-4*T)/1000 #output kJ/s-m-k
+    #https://inldigitallibrary.inl.gov/sites/STI/STI/5698704.pdf eq. 2.10
 
 def density(T):                              #input Celcius
     T=absT(T)                                #Convert T to Kelvin
     return 1000*(4.6820365-T*9.4601046e-4)   #output kg/m3\
+
+def diffusivity(T):
+    return 1e6*conductivity(T)/density(T)/cp(T) #output mm2/K
         
 def T2mu(T):
     Tref = 600

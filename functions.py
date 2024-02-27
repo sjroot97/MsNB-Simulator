@@ -13,10 +13,13 @@ def absT(T):            #input Celcius
 
 def base_to_kilo(x):    #input base
     return x/1000       #output kilo
+def milli_to_base(x):    #input milli
+    return x/1000       #output base
 #___________________________________________________________________________
 
 def kilo_to_base(x):    #input kilo
     return x*1000       #output base
+
 #___________________________________________________________________________
 
 def base_to_centi(x):   #input base
@@ -96,10 +99,10 @@ def Velo(T_x):                                 #input Celcius
 #___________________________________________________________________________
 def Velo2nd(T_x,v_old): #input Celcius and m/s
     DrivingForce=DiffP(T_x)  #output Pa
-    rho=density(list_ave(T_x)) 
+    rho=density(list_ave(T_x)) #kg/m3
     Friction = (params.xi*rho*v_old**2)/2 #output Pa
-    Pnet = DrivingForce-Friction
-    accel = Pnet/rho/loop.Ri2
+    Pnet = DrivingForce-Friction #Pa=kg/m-s2
+    accel = Pnet/rho/milli_to_base(loop.Ri2)
     return v_old+accel*params.dt #output m/s
 
 #___________________________________________________________________________
